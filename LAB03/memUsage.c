@@ -23,8 +23,6 @@ int memPercent(){
 	int	memFree = 0;
 	int	memUsed = 0;
 	int	percent = 0;
-	char	temp[32];	// capturing data we don't need
-	//double	tempD;	// for testing
 
 
 	// open file and retreive data
@@ -36,10 +34,7 @@ int memPercent(){
 
 	// caculate memory usage:
 	memUsed = memTotal - memFree;	// calculate memUsed
-	percent = ((double)memUsed / memTotal) * 100;
+	percent = ((double)memUsed / memTotal) * 100;	// Calculate percent of memory used
 	
-	// for testing
-	//printf("memUsed / memTotal = %f\n", (100 * ((double)memUsed/memTotal)));
-
 	return percent;
 }
