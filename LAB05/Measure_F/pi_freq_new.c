@@ -40,14 +40,14 @@ int main(int argc, char **argv){
 		
 		// sum frequencies
 		for (int i=0; i<samples; i++) {
-			AVG_freq += measureFreq(26);
+			AVG_freq += measureFreq(26);	// call the measureFreq Function and sum samples
 		}
-		
-		AVG_freq = AVG_freq / samples;
+		AVG_freq = AVG_freq / samples;		// divide by samples to calculate AVG
 
-		printf("Frequency = %f\n\n", AVG_freq);
-		AVG_freq = 0; // reset
-		delay(1000); // delay in milliseconds
+		printf("\rFrequency = %f", AVG_freq);
+		fflush(stdout);
+		AVG_freq = 0; // reset for next calculation
+		delay(10); // delay in milliseconds
 	}
 
 	return 0;
@@ -75,26 +75,26 @@ double measureFreq (unsigned int pin) {
 	
 	// SC1
 	// Wait for signal to change and capture time
-	pin_state = digitalRead(pin); // store current value state of pin
-	while (digitalRead(pin) == pin_state); // when pin 26 doesn't equal pin_state (state changed)
-	time_A = micros(); // save time of initial state change
-	pin_state = digitalRead(pin); // record current state
+	pin_state = digitalRead(pin);		// store current value state of pin
+	while (digitalRead(pin) == pin_state);	// when pin 26 doesn't equal pin_state (state changed)
+	time_A = micros();			// save time of initial state change
+	pin_state = digitalRead(pin);		// record current state
 
 	// SC2
 	// wait for state to change
-	while (digitalRead(pin) == pin_state); // when pin 26 doesn't equal pin_state (state changed)
-	pin_state = digitalRead(pin); // record current state
+	while (digitalRead(pin) == pin_state);	// when pin 26 doesn't equal pin_state (state changed)
+	pin_state = digitalRead(pin);		// record current state
 	
 	// SC3
 	// wait for state change
-	while (digitalRead(pin) == pin_state); // when pin 26 doesn't equal pin_state (state changed)
-	time_B = micros(); // save time of initial state change
-	pin_state = digitalRead(pin); // record current state
+	while (digitalRead(pin) == pin_state);	// when pin 26 doesn't equal pin_state (state changed)
+	time_B = micros();			// save time of initial state change
+	pin_state = digitalRead(pin);		// record current state
 
 	// calculate frequency
-	period = (time_B - time_A); // store value of period in micro seconds
-	frequency = (1.0 / period); // store calculated frequencey, units = 1/us
-	frequency *= 1000000.0; // convert 1/us to 1/s or Hz
+	period = (time_B - time_A);	// store value of period in micro seconds
+	frequency = (1.0 / period);	// store calculated frequencey, units = 1/us
+	frequency *= 1000000.0;		// convert 1/us to 1/s or Hz
 
 	return frequency;
 }
