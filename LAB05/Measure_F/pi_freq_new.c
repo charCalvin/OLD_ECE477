@@ -1,4 +1,4 @@
-/* pi_freq.c
+/* pi_freq_new.c
  *
  * Calvin Skinner
  * 3/6/2019
@@ -24,27 +24,33 @@
 #include <math.h>
 
 double measureFreq (unsigned int pin);
+void calibrate (double frequency);
 
 int main(int argc, char **argv){
 	
 	// Variables:
 	double		 AVG_freq = 0; // stores average frequency
-	unsigned int	 samples = 32; // number of samples to average
+	unsigned int	 samples = 16; // number of samples to average
 	double	freq_samples[samples]; // stores frequency samples
-
+	char *string = "initialized";
+	
 	// initialize wiring pi
 	wiringPiSetup();
 	
 	// MAIN LOOP
 	while (1) {
 		
-		// sum frequencies
+		// sum frequencies for given samples
 		for (int i=0; i<samples; i++) {
 			AVG_freq += measureFreq(26);	// call the measureFreq Function and sum samples
 		}
 		AVG_freq = AVG_freq / samples;		// divide by samples to calculate AVG
 
-		printf("\rFrequency = %f", AVG_freq);
+		if (AVG_freq < 100.0) string = "low";
+		else if (AVG_freq == 100.0) string = "";
+		else string = "high";		
+
+		printf("\rFrequency = %f, %s", AVG_freq, string);
 		fflush(stdout);
 		AVG_freq = 0; // reset for next calculation
 		delay(10); // delay in milliseconds
@@ -99,4 +105,15 @@ double measureFreq (unsigned int pin) {
 	return frequency;
 }
 
+// calibrate: adusts the avr's clock
 
+void calibrate (double frequency) {
+	pinMode(13, OUTPUT);	// Connected to avr PC1: Status bit
+	pinMode(19, OUTPUT);	// Connected to avr PC2: Sign bit
+	
+	if (/*PWM Frequency High*/) {
+		digitalWrite(13, HIGH);
+		digitalWrite(19, LOW);
+	}
+	
+}
