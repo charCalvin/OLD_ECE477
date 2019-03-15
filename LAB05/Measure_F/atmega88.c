@@ -34,25 +34,29 @@ int main()
 	init_pwm();            //set up hardware PWM
 	
 	// Set DDRC bit 1-3 to zero
-	DDRC &= ~0x08;	
-	PORTC &= ~0x08;	// clear bits 1-3 for no pull up
-	
-	char PC1_val = 0;
-	char PC2_val = 0;
-	char PC3_val = 0;
-	
+	DDRC &= ~0x06;	// 0b00001110
+	PORTC &= ~0x06;	// clear bits 1-3 for no pull up
+
+	// Set DDRC pin3 to output = 1
+	DDRC |= 0x08;
+	PORTC |= 0x08;
+		
 /*	This while loop reads two pins: PC1, PC2, The raspberry pi 
 	sends a signal telling the avr chip to add or subtract from 
 	the OSCCAL. PC1 is status pin; when its high iformation is
 	being sent on PC2. PC2 denotes sign; whether to add or
 	subtract from OSCCAL.
 */
+	OSCCAL = 0xFF;
   	while(1){
-		if (PC1_val == 1) {
-			if (PC2_val == 1) OSCCAL += 1;
-			else OSCCAL -= 1;
-		}
-		
+		PORTC &= ~0x08;
+		while (PC1_val == 0);
+		if (PC2_val == 1) OSCCAL+=1;	// increase clock speed
+		else OSCCAL-=1;		// decrease clock speed
+		while (PC1_val == 0);
+		while (PC1_val == 1);		
+		PORTC |= 0x08;
+		//OSCCAL+= -1;
 	}             
 }
 

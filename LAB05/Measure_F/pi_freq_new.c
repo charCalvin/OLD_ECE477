@@ -24,7 +24,7 @@
 #include <math.h>
 
 double measureFreq (unsigned int pin);
-void calibrate (double frequency);
+void calibrateFreq (double frequency);
 
 int main(int argc, char **argv){
 	
@@ -36,6 +36,11 @@ int main(int argc, char **argv){
 	
 	// initialize wiring pi
 	wiringPiSetup();
+
+	//pinMode(13, );
+	//while(1){
+		
+	//}
 	
 	// MAIN LOOP
 	while (1) {
@@ -52,8 +57,12 @@ int main(int argc, char **argv){
 
 		printf("\rFrequency = %f, %s", AVG_freq, string);
 		fflush(stdout);
-		AVG_freq = 0; // reset for next calculation
 		delay(10); // delay in milliseconds
+		
+		// Calibrate the AVR's clock
+		calibrateFreq(AVG_freq);
+		
+		AVG_freq = 0; // reset for next calculation
 	}
 
 	return 0;
@@ -107,13 +116,29 @@ double measureFreq (unsigned int pin) {
 
 // calibrate: adusts the avr's clock
 
-void calibrate (double frequency) {
-	pinMode(13, OUTPUT);	// Connected to avr PC1: Status bit
-	pinMode(19, OUTPUT);	// Connected to avr PC2: Sign bit
+void calibrateFreq (double frequency) {
+	char pinStatus = 23;	// (GPIO13 = WP23) Connected to avr PC1: Status bit
+	char pinSign = 24;	// (GPIO19 = WP24) Connected to avr PC2: Sign bit
+
+	pinMode(pinStatus, OUTPUT);
+	pinMode(pinSign, OUTPUT);
 	
-	if (/*PWM Frequency High*/) {
-		digitalWrite(13, HIGH);
-		digitalWrite(19, LOW);
+	// if frequency is too high write GPIO 13 high and GPIO 19 low
+	if (frequency > 100.5) {
+		digitalWrite(pinStatus, HIGH); // Data is transmitting (Status)
+		digitalWrite(pinSign, LOW); // Subract from OSCCAL
 	}
 	
+	// if frequency is too low write GPIO 13 high and GPIO 19 low
+	else if (frequency < 99.5) {
+		digitalWrite(pinStatus, HIGH); // data is transmitting (Status)
+		digitalWrite(pinSign, HIGH); // Add to OSCCAL
+	}
+	else printf("Frequency is in spec");
+	
+	for (int i=0; i<75; i++);
+	
+	// end transmition	
+	digitalWrite(pinStatus, LOW);
+	digitalWrite(pinSign, LOW);
 }
