@@ -31,7 +31,6 @@ int main(int argc, char **argv){
 	// Variables:
 	double		 AVG_freq = 0; // stores average frequency
 	unsigned int	 samples = 16; // number of samples to average
-	double	freq_samples[samples]; // stores frequency samples
 	char *string = "initialized";
 	
 	// initialize wiring pi
