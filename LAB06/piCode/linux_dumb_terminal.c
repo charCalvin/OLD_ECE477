@@ -1,6 +1,11 @@
 // This file was originally written by Bruce Segee at the University of Maine Orono
 // It has been edited by Calvin Skinner for use in ECE 477 Lab 6 
 
+	/*
+		Check why the init() function is not called in main and if it is called somewhere else.
+		I can not find where it is called. Do we need to add it somewhere? I have asked derek.
+	*/
+
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
@@ -26,7 +31,7 @@ int main(int argc, char *argv[]){	// todo command line arguments (DONE)
 		return -1;
 	} else {
 		BAUD = atoi(argv[1]); // index 1 is the second arg and is the first arg passed by the user
-		serial_str = argv[2];
+		serial_str = argv[2]; // this should be "/dev/ttyS0"
 		printf("Using Buadrate: %d\n", BAUD);
 		printf("Using serial port: %s\n", *serial_str);
 	}
@@ -58,12 +63,12 @@ void from_to(int f1, int f2){
 	while(1) if(read(f1,&c,1))write(f2,&c,1); // WTF is this????
 }
 
-int  init(int baud){
+int  init(int baud, char *str){ // check that the str is passed correctly
     int fd1;
     struct termios tc;                // terminal control structure
 
     //todo serial port should not be hard coded
-    fd1 = open("/dev/ttyS0", O_RDWR|O_NOCTTY);  // really ought to check for error
+    fd1 = open("str", O_RDWR|O_NOCTTY);  // really ought to check for error
     tcgetattr(fd1, &tc);
     tc.c_iflag = IGNPAR;
     tc.c_oflag = 0;
